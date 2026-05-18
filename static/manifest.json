@@ -1,0 +1,9 @@
+{
+  "name": "AlertaFlota",
+  "short_name": "AlertaFlota",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f0f2f5",
+  "theme_color": "#003366",
+  "orientation": "portrait"
+}

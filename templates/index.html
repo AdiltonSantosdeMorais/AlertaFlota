@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>AlertaFlota</title>
+    <link rel="manifest" href="/manifest.json">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root { --blue: #003366; --gray: #cbd5e0; --light-gray: #f0f2f5; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: var(--light-gray); margin: 0; padding: 0; width: 100%; overflow-x: hidden; }
+        
+        /* Ajuste Responsivo Avançado para Adequar Data e Hora em qualquer Tela de Celular */
+        input[type="time"], input[type="date"] {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            min-height: 40px;
+            max-height: 44px;
+            background: #fff;
+            border: 1px solid #ddd !important;
+            padding: 8px 12px !important;
+            border-radius: 4px;
+            width: 100%;
+            display: inline-block;
+            line-height: normal;
+            font-size: 14px;
+            box-shadow: none;
+        }
+
+        /* Força os seletores nativos do iOS/Android a não estourarem o tamanho da linha */
+        input[type="time"]::-webkit-calendar-picker-indicator,
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            background: transparent;
+            bottom: 0;
+            color: transparent;
+            cursor: pointer;
+            height: auto;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: auto;
+        }
+
+        .app-container { background: white; width: 100%; max-width: 800px; margin: 0 auto; min-height: 100vh; border: 1px solid #000; display: flex; flex-direction: column; }
+        .header-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        .header-table td { border: 1px solid #000; text-align: center; padding: 5px; font-weight: bold; font-size: 10px; overflow: hidden; }
+        .logo-img { width: 60px; height: auto; }
+        .tech-info { text-align: left !important; font-size: 7px !important; line-height: 1.2; }
+
+        .section-header { background: var(--gray); border: 1px solid #000; padding: 10px; font-weight: bold; font-size: 12px; text-transform: uppercase; }
+        .row { display: flex; border-bottom: 1px solid #000; width: 100%; flex-wrap: wrap; }
+        .cell { border-right: 1px solid #000; padding: 12px; display: flex; flex-direction: column; flex: 1; min-width: 150px; position: relative; }
+        .cell:last-child { border-right: none; }
+        
+        label { font-size: 10px; font-weight: bold; margin-bottom: 6px; color: var(--blue); text-transform: uppercase; }
+        input, textarea, select { border: none; outline: none; font-size: 14px; background: transparent; width: 100%; color: #000; }
+        
+        /* Ajuste fluido para seletores dropdown padrão */
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23003366' d='M0 0l5 5 5-5z'/></svg>") no-repeat right 10px center;
+            background-size: 10px 6px;
+            padding-right: 25px;
+        }
+        
+        .area-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 8px; width: 100%; padding: 5px 0; }
+        .check-item { display: flex; align-items: center; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        
+        .photo-upload { padding: 25px; border: 2px dashed var(--gray); margin: 15px; text-align: center; cursor: pointer; background: #fafafa; border-radius: 4px; }
+        
+        .preview-container { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 10px; 
+            padding: 15px; 
+            width: 100%;
+        }
+        .preview-thumb { 
+            width: 100%; 
+            height: 130px; 
+            object-fit: contain;
+            background: #e2e8f0;
+            border: 1px solid #000; 
+            border-radius: 4px;
+        }
+
+        .btn-submit { background: var(--blue); color: white; border: none; padding: 20px; width: 100%; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: auto; }
+        #statusMsg { font-size: 12px; text-align: center; padding: 15px; display: none; font-weight: bold; }
+
+        @media (max-width: 480px) { 
+            .cell { min-width: 100%; border-right: none; border-bottom: 1px solid #000; } 
+            .preview-container { gap: 6px; padding: 10px; }
+            .preview-thumb { height: 100px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <form id="hSEForm">
+        <table class="header-table">
+            <tr>
+                <td style="width: 20%;"><img id="logoImg" src="/static/logo-elecnor.png" class="logo-img"></td>
+                <td style="width: 50%;">FORMULARIO ALERTAFLOTA<br>PROYECTO COPIAPÓ SOLAR</td>
+                <td style="width: 30%;" class="tech-info">
+                    CÓDIGO: <br> FECHA: <br> PÁGINA: 1 DE 1 <br> REVISIÓN: 05 <br> CATEGORÍA: FLOTAS <br> SECTOR: SEGURIDAD
+                </td>
+            </tr>
+        </table>
+        
+        <div class="section-header">1. CONTEXTO</div>
+        <div class="row">
+            <div class="cell"><label>FECHA:</label><input type="date" id="fecha" required></div>
+            <div class="cell"><label>HORA:</label><input type="time" id="hora" required></div>
+        </div>
+        <div class="row">
+            <div class="cell"><label>LOCALIZACIÓN:</label><input type="text" id="localizacion" placeholder="DIGITE A LOCALIZAÇÃO" required></div>
+        </div>
+        <div class="row">
+            <div class="cell"><label>CÓDIGO DO EQUIPAMENTO:</label><input type="text" id="codigo_equipamento" placeholder="DIGITE O CÓDIGO DO EQUIPAMENTO" required></div>
+        </div>
+        <div class="row">
+            <div class="cell"><label>NOME DO EQUIPAMENTO:</label>
+                <select id="nome_equipamento" required>
+                    <option value="">SELECCIONE A EQUIPE...</option>
+                    <option value="AMBULANCIA">AMBULANCIA</option>
+                    <option value="AUTOBÚS">AUTOBÚS</option>
+                    <option value="CAMIÓN DE USO GENERAL">CAMIÓN DE USO GENERAL</option>
+                    <option value="CAMIÓN GRÚA DE REMOLQUE">CAMIÓN GRÚA DE REMOLQUE</option>
+                    <option value="CAMIÓN HORMIGONERA">CAMIÓN HORMIGONERA</option>
+                    <option value="CAMIONES">CAMIONES</option>
+                    <option value="CAMIONES EN GENERAL">CAMIONES EN GENERAL</option>
+                    <option value="CAMIONES VOLQUETE">CAMIONES VOLQUETE</option>
+                    <option value="CAMIONETA 4X4">CAMIONETA 4X4</option>
+                    <option value="EXCAVADORA HIDRÁULICA">EXCAVADORA HIDRÁULICA</option>
+                    <option value="MANIPULADOR TELESCÓPICO">MANIPULADOR TELESCÓPICO</option>
+                    <option value="MICROBÚS">MICROBÚS</option>
+                    <option value="MINI COMPACTADOR DE RODILLO">MINI COMPACTADOR DE RODILLO</option>
+                    <option value="MOTONIVELADORA">MOTONIVELADORA</option>
+                    <option value="PLATAFORMA CAMIÓN GRÚA">PLATAFORMA CAMIÓN GRÚA</option>
+                    <option value="PLATAFORMA DE TRABAJO EN ALTURA - PTA">PLATAFORMA DE TRABAJO EN ALTURA - PTA</option>
+                    <option value="REMOLQUES EN GENERAL">REMOLQUES EN GENERAL</option>
+                    <option value="RETROEXCAVADORA">RETROEXCAVADORA</option>
+                    <option value="TRACTOR DE NEUMÁTICOS">TRACTOR DE NEUMÁTICOS</option>
+                    <option value="TRACTOR DE ORUGAS">TRACTOR DE ORUGAS</option>
+                    <option value="VANS">VANS</option>
+                    <option value="VEHÍCULOS LIVIANOS">VEHÍCULOS LIVIANOS</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell"><label>PATENTE DO EQUIPAMENTO:</label><input type="text" id="patente_equipamento" placeholder="DIGITE A PATENTE/PLACA DO EQUIPAMENTO" required></div>
+        </div>
+        <div class="row">
+            <div class="cell"><label>ÁREA ESPECÍFICA:</label>
+                <div class="area-grid">
+                    <label class="check-item"><input type="radio" name="area" value="IIFF" required> IIFF</label>
+                    <label class="check-item"><input type="radio" name="area" value="PV"> PV</label>
+                    <label class="check-item"><input type="radio" name="area" value="BESS"> BESS</label>
+                    <label class="check-item"><input type="radio" name="area" value="EXTERNO"> EXTERNO</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-header">2. DESCRIPCIÓN DEL EVENTO / HALLAZGO</div>
+        <div class="row"><div class="cell"><textarea id="desc" rows="4" placeholder="DESCRIBA LO SUCEDIDO..." required></textarea></div></div>
+
+        <div class="section-header">3. REGISTRO FOTOGRÁFICO <span id="photo-count">(0/6)</span></div>
+        <div class="photo-upload" id="upload-trigger">
+            <label style="cursor:pointer">📸 + ANEXAR FOTOS</label>
+            <input type="file" id="foto" accept="image/*" multiple style="display:none;">
+        </div>
+        <div class="preview-container" id="preview-container"></div>
+
+        <div class="section-header">4. IDENTIFICACIÓN</div>
+        <div class="row">
+            <div class="cell"><label>NOMBRE Y APELLIDO:</label><input type="text" id="relator" placeholder="NOMBRE COMPLETO" required></div>
+            <div class="cell"><label>EMPRESA:</label><input type="text" id="empresa" required placeholder="NOMBRE DE LA EMPRESA"></div>
+        </div>
+
+        <div id="statusMsg"></div>
+        <button type="submit" id="submitBtn" class="btn-submit">ENVIAR Y GENERAR PDF</button>
+    </form>
+</div>
+
+<script>
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpvovV6jGu_7lazLY3HfvCaBxVPOUjtLKHNjmBuKEGyM5QIxrEIgeo9kq5DPZRyEePJg/exec';
+
+    const form = document.getElementById('hSEForm');
+    const fotoInput = document.getElementById('foto');
+    const previewContainer = document.getElementById('preview-container');
+    const photoCountLabel = document.getElementById('photo-count');
+    let imagensObjetoArray = [];
+
+    function saveToQueue(data) {
+        let queue = JSON.parse(localStorage.getItem('hse_queue') || '[]');
+        queue.push(data);
+        localStorage.setItem('hse_queue', JSON.stringify(queue));
+    }
+
+    async function syncQueue() {
+        if (!navigator.onLine) return;
+        let queue = JSON.parse(localStorage.getItem('hse_queue') || '[]');
+        if (queue.length === 0) return;
+
+        for (let i = 0; i < queue.length; i++) {
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    body: JSON.stringify(queue[i]) 
+                });
+                queue.splice(i, 1);
+                i--;
+            } catch (e) { break; }
+        }
+        localStorage.setItem('hse_queue', JSON.stringify(queue));
+    }
+
+    window.addEventListener('online', syncQueue);
+    window.addEventListener('load', syncQueue);
+
+    document.getElementById('upload-trigger').onclick = () => {
+        if (imagensObjetoArray.length >= 6) {
+            alert("Máximo de 6 fotos atingido.");
+            return;
+        }
+        fotoInput.click();
+    };
+
+    fotoInput.addEventListener('change', function(e) {
+        const files = e.target.files;
+        if (!files.length) return;
+
+        Array.from(files).forEach(file => {
+            if (imagensObjetoArray.length >= 6) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const base64Data = event.target.result;
+
+                const tempImg = new Image();
+                tempImg.onload = function() {
+                    if (imagensObjetoArray.length >= 6) return;
+
+                    imagensObjetoArray.push({
+                        base64: base64Data,
+                        width: tempImg.width,
+                        height: tempImg.height
+                    });
+
+                    const imgElement = document.createElement('img');
+                    imgElement.src = base64Data;
+                    imgElement.classList.add('preview-thumb');
+                    previewContainer.appendChild(imgElement);
+                    
+                    photoCountLabel.innerText = `(${imagensObjetoArray.length}/6)`;
+                };
+                tempImg.src = base64Data;
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        fotoInput.value = "";
+    });
+
+    async function getLogoBase64(url) {
+        try {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.readAsDataURL(blob);
+            });
+        } catch (e) { return null; }
+    }
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        const status = document.getElementById('statusMsg');
+        const relatorNome = document.getElementById('relator').value.toUpperCase();
+        
+        btn.disabled = true;
+        status.style.display = "block";
+        status.style.color = "orange";
+        status.innerText = "⏳ PROCESANDO REPORTE...";
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
+        const corDeFundo = [203, 213, 224];
+        const corDoRotulo = [0, 51, 102];
+
+        doc.setLineWidth(0.5);
+        doc.rect(10, 10, 190, 25); 
+        doc.line(50, 10, 50, 35); doc.line(150, 10, 150, 35);
+        const logoBase64 = await getLogoBase64('/static/logo-elecnor.png');
+        if (logoBase64) doc.addImage(logoBase64, 'PNG', 12, 12, 35, 15);
+        doc.setFontSize(11); doc.setFont("helvetica", "bold");
+        doc.text("FORMULARIO ALERTAFLOTA", 100, 20, { align: 'center' });
+        doc.text("PROYECTO COPIAPÓ SOLAR", 100, 27, { align: 'center' });
+        doc.setFontSize(7); doc.text("CÓDIGO:", 152, 15); doc.text("FECHA:", 152, 19); doc.text("PÁGINA: 1 DE 1", 152, 23); doc.text("REVISIÓN: 05", 152, 27); doc.text("CATEGORÍA: FLOTAS", 152, 31); doc.text("SECTOR: SEGURIDAD", 152, 34);
+
+        doc.setFillColor(...corDeFundo); doc.rect(10, 35, 190, 8, 'F'); doc.rect(10, 35, 190, 8);
+        doc.setFontSize(10); doc.setTextColor(0); doc.text("1. CONTEXTO", 12, 41);
+        
+        doc.rect(10, 43, 190, 12); doc.line(105, 43, 105, 55);
+        doc.setFontSize(7); doc.setTextColor(...corDoRotulo); doc.text("FECHA:", 12, 46); doc.text("HORA:", 107, 46);
+        doc.setFontSize(10); doc.setTextColor(0); doc.text(document.getElementById('fecha').value, 12, 52); doc.text(document.getElementById('hora').value, 107, 52);
+        
+        doc.rect(10, 55, 190, 12); doc.line(105, 55, 105, 67);
+        doc.setFontSize(7); doc.setTextColor(...corDoRotulo); doc.text("LOCALIZACIÓN:", 12, 59); doc.text("ÁREA ESPECÍFICA:", 107, 59);
+        doc.setFontSize(9); doc.setTextColor(0); doc.text(document.getElementById('localizacion').value.toUpperCase(), 12, 64);
+        const selectedAreaElement = document.querySelector('input[name="area"]:checked');
+        doc.text(selectedAreaElement ? selectedAreaElement.value : '', 107, 64);
+
+        doc.rect(10, 67, 190, 12); doc.line(105, 67, 105, 79);
+        doc.setFontSize(7); doc.setTextColor(...corDoRotulo); doc.text("CÓDIGO DO EQUIPAMENTO:", 12, 71); doc.text("NOME DO EQUIPAMENTO:", 107, 71);
+        doc.setFontSize(9); doc.setTextColor(0); doc.text(document.getElementById('codigo_equipamento').value.toUpperCase(), 12, 76);
+        doc.text(document.getElementById('nome_equipamento').value, 107, 76);
+
+        doc.rect(10, 79, 190, 12);
+        doc.setFontSize(7); doc.setTextColor(...corDoRotulo); doc.text("PATENTE DO EQUIPAMENTO:", 12, 83);
+        doc.setFontSize(9); doc.setTextColor(0); doc.text(document.getElementById('patente_equipamento').value.toUpperCase(), 12, 88);
+
+        doc.setFillColor(...corDeFundo); doc.rect(10, 91, 190, 8, 'F'); doc.rect(10, 91, 190, 8);
+        doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(0); doc.text("2. DESCRIPCIÓN DEL EVENTO / HALLAZGO", 12, 97);
+        doc.rect(10, 99, 190, 25); doc.setFontSize(10); doc.setFont("helvetica", "normal");
+        const lines = doc.splitTextToSize(document.getElementById('desc').value.toUpperCase(), 180);
+        doc.text(lines, 12, 105);
+
+        doc.setFillColor(...corDeFundo); doc.rect(10, 124, 190, 8, 'F'); doc.rect(10, 124, 190, 8);
+        doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.text("3. REGISTRO FOTOGRÁFICO", 12, 130);
+        
+        let boxStartY = 132;
+        let boxHeight = 85;
+        doc.rect(10, boxStartY, 190, boxHeight);
+
+        if (imagensObjetoArray.length > 0) {
+            let maxW = 54;
+            let maxH = 36;
+            let startX = 14;
+            let startY = boxStartY + 4;
+            let currentX = startX;
+            let currentY = startY;
+
+            for (let i = 0; i < imagensObjetoArray.length; i++) {
+                if (currentY + maxH <= boxStartY + boxHeight) {
+                    let img = imagensObjetoArray[i];
+                    
+                    let ratio = Math.min(maxW / img.width, maxH / img.height);
+                    let finalW = img.width * ratio;
+                    let finalH = img.height * ratio;
+
+                    let offsetX = currentX + (maxW - finalW) / 2;
+                    let offsetY = currentY + (maxH - finalH) / 2;
+
+                    doc.addImage(img.base64, 'JPEG', offsetX, offsetY, finalW, finalH);
+                    
+                    currentX += maxW + 6; 
+                    if (currentX + maxW > 195) { 
+                        currentX = startX;
+                        currentY += maxH + 4;
+                    }
+                }
+            }
+        }
+
+        doc.setFillColor(...corDeFundo); doc.rect(10, 222, 190, 8, 'F'); doc.rect(10, 222, 190, 8);
+        doc.text("4. IDENTIFICACIÓN", 12, 228);
+        doc.rect(10, 230, 190, 15); doc.line(105, 230, 105, 245);
+        doc.setFontSize(8); doc.setTextColor(...corDoRotulo); doc.text("NOMBRE Y APELLIDO:", 12, 234); doc.text("EMPRESA:", 107, 234);
+        doc.setFontSize(10); doc.setTextColor(0); doc.text(relatorNome, 12, 241);
+        doc.text(document.getElementById('empresa').value.toUpperCase(), 107, 241);
+
+        const pdfBase64 = doc.output('datauristring').split(',')[1];
+        const fileName = `${relatorNome}_${document.getElementById('fecha').value}.pdf`;
+        const payload = { name: fileName, bytes: pdfBase64 };
+
+        if (navigator.onLine) {
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+                status.innerText = "✅ ¡ENVIADO EXITOSAMENTE AL DRIVE!";
+                status.style.color = "green";
+            } catch (err) {
+                saveToQueue(payload);
+                status.innerText = "⚠️ ERROR DE RED. GUARDADO PARA SYNC AUTOMÁTICO.";
+                status.style.color = "orange";
+            }
+        } else {
+            saveToQueue(payload);
+            status.innerText = "☁️ MODO OFFLINE: GUARDADO PARA SINCRONIZAR LUEGO.";
+            status.style.color = "blue";
+        }
+
+        doc.save(fileName);
+        form.reset();
+        previewContainer.innerHTML = "";
+        imagensObjetoArray = [];
+        photoCountLabel.innerText = "(0/6)";
+        btn.disabled = false;
+        setTimeout(() => { status.style.display = 'none'; }, 6000);
+    });
+</script>
+</body>
+</html>
