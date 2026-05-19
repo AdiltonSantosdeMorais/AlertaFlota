@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>AlertaFlota</title>
     
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/static/manifest.json">
     <link rel="apple-touch-icon" sizes="512x512" href="/static/icon.png">
     <link rel="icon" type="image/png" sizes="512x512" href="/static/icon.png">
     
@@ -209,14 +209,12 @@
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzuM3ldBjFInWMtH6xcZVCfmwXX6uknztafkxJjY_S_M32W2ne4Y35cgCgVbMZpBXpAkA/exec';
 
-    // Lógica para detecção e força de atualização automática
+    // Integração da detecção de alterações e força de atualização automática
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/sw.js')
                 .then(reg => {
                     console.log('Service Worker registrado!');
-                    
-                    // Se houver uma atualização esperando, força a instalação
                     reg.addEventListener('updatefound', () => {
                         const newWorker = reg.installing;
                         newWorker.addEventListener('statechange', () => {
@@ -230,7 +228,6 @@
                 .catch(err => console.log('Error al registrar Service Worker:', err));
         });
 
-        // Força o reload instantâneo em todas as abas abertas quando o novo sw assume o controle
         let refreshing = false;
         navigator.serviceWorker.addEventListener('controllerchange', () => {
             if (!refreshing) {
