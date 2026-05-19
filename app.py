@@ -1,7 +1,8 @@
 from flask import Flask, render_template, send_from_directory
 import os
 
-app = Flask(__name__)
+# Força o Flask a reconhecer a pasta static de forma absoluta
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 
 @app.route('/')
 def index():
