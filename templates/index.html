@@ -118,7 +118,7 @@
     <form id="hSEForm">
         <table class="header-table">
             <tr>
-                <td style="width: 20%;"><img id="logoImg" src="/static/logo-elecnor.png" class="logo-img"></td>
+                <td style="width: 20%;"><img id="logoImg" src="static/logo-elecnor.png" class="logo-img"></td>
                 <td style="width: 50%;">FORMULARIO ALERTAFLOTA<br>PROYECTO COPIAPÓ SOLAR</td>
                 <td style="width: 30%;" class="tech-info">
                     CÓDIGO: <br> FECHA: <br> PÁGINA: 1 DE 1 <br> REVISIÓN: 05 <br> CATEGORÍA: FLOTAS <br> SECTOR: SEGURIDAD
@@ -326,8 +326,11 @@
         doc.setLineWidth(0.5);
         doc.rect(10, 10, 190, 25); 
         doc.line(50, 10, 50, 35); doc.line(150, 10, 150, 35);
-        const logoBase64 = await getLogoBase64('/static/logo-elecnor.png');
+        
+        // Ajuste en jsPDF para buscar la imagen usando la ruta relativa corregida
+        const logoBase64 = await getLogoBase64('static/logo-elecnor.png');
         if (logoBase64) doc.addImage(logoBase64, 'PNG', 12, 12, 35, 15);
+        
         doc.setFontSize(11); doc.setFont("helvetica", "bold");
         doc.text("FORMULARIO ALERTAFLOTA", 100, 20, { align: 'center' });
         doc.text("PROYECTO COPIAPÓ SOLAR", 100, 27, { align: 'center' });
