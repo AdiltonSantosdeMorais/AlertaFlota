@@ -209,11 +209,34 @@
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzuM3ldBjFInWMtH6xcZVCfmwXX6uknztafkxJjY_S_M32W2ne4Y35cgCgVbMZpBXpAkA/exec';
 
+    // Lógica para detecção e força de atualização automática
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/sw.js')
-                .then(reg => console.log('Service Worker registrado con éxito.', reg))
+                .then(reg => {
+                    console.log('Service Worker registrado!');
+                    
+                    // Se houver uma atualização esperando, força a instalação
+                    reg.addEventListener('updatefound', () => {
+                        const newWorker = reg.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                console.log('Nova versão detectada! Recarregando app...');
+                                window.location.reload();
+                            }
+                        });
+                    });
+                })
                 .catch(err => console.log('Error al registrar Service Worker:', err));
+        });
+
+        // Força o reload instantâneo em todas as abas abertas quando o novo sw assume o controle
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (!refreshing) {
+                refreshing = true;
+                window.location.reload();
+            }
         });
     }
 
@@ -327,7 +350,6 @@
         doc.rect(10, 10, 190, 25); 
         doc.line(50, 10, 50, 35); doc.line(150, 10, 150, 35);
         
-        // Caminho do jsPDF também sincronizado em minúsculas
         const logoBase64 = await getLogoBase64('/static/logo-elecnor.png');
         if (logoBase64) doc.addImage(logoBase64, 'PNG', 12, 12, 35, 15);
         
