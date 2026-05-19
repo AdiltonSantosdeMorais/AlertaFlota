@@ -327,7 +327,7 @@
         doc.rect(10, 10, 190, 25); 
         doc.line(50, 10, 50, 35); doc.line(150, 10, 150, 35);
         
-        // Chamada da logo no PDF com a extensão corrigida para maiúsculo
+        // Ajuste fino para carregar a extensão .PNG maiúscula na renderização interna do PDF
         const logoBase64 = await getLogoBase64('static/logo-elecnor.PNG');
         if (logoBase64) doc.addImage(logoBase64, 'PNG', 12, 12, 35, 15);
         
