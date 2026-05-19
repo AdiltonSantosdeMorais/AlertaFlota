@@ -1,5 +1,5 @@
 // Sempre que fizer uma alteração no app, mude esse número (ex: v1 para v2)
-const CACHE_NAME = 'alertaflota-v6';
+const CACHE_NAME = 'alertaflota-v7';
 const urlsToCache = [
   '/',
   '/templates/index.html',
