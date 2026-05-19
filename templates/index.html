@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>AlertaFlota</title>
+    
     <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" sizes="512x512" href="/static/icon.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/static/icon.png">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --blue: #003366; --gray: #cbd5e0; --light-gray: #f0f2f5; }
@@ -38,7 +42,7 @@
         .section-header { background: var(--gray); border: 1px solid #000; padding: 10px; font-weight: bold; font-size: 12px; text-transform: uppercase; }
         .row { display: flex; border-bottom: 1px solid #000; width: 100%; flex-wrap: wrap; }
         
-        /* Adicionado isolamento de posicionamento nas células de entrada de dados */
+        /* Isolamento de posicionamento nas células de entrada de dados */
         .cell { border-right: 1px solid #000; padding: 12px; display: flex; flex-direction: column; flex: 1; min-width: 150px; position: relative; z-index: 1; }
         .cell:last-child { border-right: none; }
         
@@ -53,7 +57,7 @@
             padding-right: 25px;
         }
         
-        /* Grid de Área Especifica Modificado para Alinhamento Blindado */
+        /* Grid de Área Específica Modificado para Alinhamento Blindado */
         .area-grid { 
             display: flex; 
             flex-wrap: wrap; 
@@ -72,7 +76,7 @@
             padding: 8px 12px;
             border-radius: 4px;
             cursor: pointer;
-            min-width: calc(50% - 5px); /* Ocupa metade da tela certinho no celular */
+            min-width: calc(50% - 5px); /* Ocupa a metade da tela certinho no celular */
         }
         .check-item input[type="radio"] {
             width: 16px;
@@ -201,7 +205,7 @@
 </div>
 
 <script>
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpvovV6jGu_7lazLY3HfvCaBxVPOUjtLKHNjmBuKEGyM5QIxrEIgeo9kq5DPZRyEePJg/exec';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzuM3ldBjFInWMtH6xcZVCfmwXX6uknztafkxJjY_S_M32W2ne4Y35cgCgVbMZpBXpAkA/exec';
 
     const form = document.getElementById('hSEForm');
     const fotoInput = document.getElementById('foto');
