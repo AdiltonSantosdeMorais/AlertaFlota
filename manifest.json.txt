@@ -1,0 +1,17 @@
+{
+  "short_name": "AlertaFlota",
+  "name": "Formulario AlertaFlota Copiapó Solar",
+  "icons": [
+    {
+      "src": "/static/icon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#f0f2f5",
+  "theme_color": "#003366",
+  "display": "standalone",
+  "orientation": "portrait"
+}
