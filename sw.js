@@ -1,4 +1,4 @@
-const CACHE_NAME = 'alertaflota-v2';
+const CACHE_NAME = 'alertaflota-v3';
 const urlsToCache = [
   '/',
   '/templates/index.html',
