@@ -15,7 +15,7 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: var(--light-gray); margin: 0; padding: 0; width: 100%; overflow-x: hidden; }
         
-        /* Axuste do tamaño e posicionamento estable para Data e Hora */
+        /* Ajuste de tamaño y posicionamiento estable para Data y Hora */
         input[type="time"], input[type="date"] {
             appearance: none;
             -webkit-appearance: none;
@@ -42,7 +42,7 @@
         .section-header { background: var(--gray); border: 1px solid #000; padding: 10px; font-weight: bold; font-size: 12px; text-transform: uppercase; }
         .row { display: flex; border-bottom: 1px solid #000; width: 100%; flex-wrap: wrap; }
         
-        /* Illamento de posicionamento nas células de entrada de datos */
+        /* Aislamiento de posicionamiento en las celdas de entrada */
         .cell { border-right: 1px solid #000; padding: 12px; display: flex; flex-direction: column; flex: 1; min-width: 150px; position: relative; z-index: 1; }
         .cell:last-child { border-right: none; }
         
@@ -57,7 +57,7 @@
             padding-right: 25px;
         }
         
-        /* Grid de Área Específica Modificado para Aliñamento Blindado */
+        /* Grid de Área Específica Modificado para Alineación Blindada */
         .area-grid { 
             display: flex; 
             flex-wrap: wrap; 
@@ -76,7 +76,7 @@
             padding: 8px 12px;
             border-radius: 4px;
             cursor: pointer;
-            min-width: calc(50% - 5px); /* Ocupa a metade da pantalla xusto no móbil */
+            min-width: calc(50% - 5px); /* Ocupa la mitad exacta de la pantalla en celular */
         }
         .check-item input[type="radio"] {
             width: 16px;
@@ -205,15 +205,15 @@
 </div>
 
 <script>
-    // URL do Google Script activa para recibir os PDFs no Drive
+    // URL del Google Script activa para recibir los PDFs en la carpeta correcta
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzuM3ldBjFInWMtH6xcZVCfmwXX6uknztafkxJjY_S_M32W2ne4Y35cgCgVbMZpBXpAkA/exec';
 
-    // Rexistro do Service Worker para activar a compatibilidade PWA e a icona
+    // Registro del Service Worker para soporte PWA e íconos estables
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/sw.js')
-                .then(reg => console.log('Service Worker registrado correctamente.', reg))
-                .catch(err => console.log('Erro ao rexistrar o Service Worker:', err));
+                .then(reg => console.log('Service Worker registrado con éxito.', reg))
+                .catch(err => console.log('Error al registrar Service Worker:', err));
         });
     }
 
