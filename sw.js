@@ -1,5 +1,5 @@
 // Atualizado para v12 para forçar os celulares a limparem a configuração anterior
-const CACHE_NAME = 'alertaflota-v12';
+const CACHE_NAME = 'alertaflota-v13';
 const urlsToCache = [
   '/',                     // Esta é a rota principal que o Flask serve
   '/static/logo-elecnor.png',
