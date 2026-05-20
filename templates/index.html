@@ -15,21 +15,42 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: var(--light-gray); margin: 0; padding: 0; width: 100%; overflow-x: hidden; }
         
+        /* Ajuste Ultra-Responsivo para Data e Hora não quebrarem o layout */
+        .row { 
+            display: flex; 
+            border-bottom: 1px solid #000; 
+            width: 100%; 
+        }
+
+        .cell { 
+            border-right: 1px solid #000; 
+            padding: 10px; 
+            display: flex; 
+            flex-direction: column; 
+            flex: 1; 
+            width: 50%; /* Divisão exata de 50/50 na linha de contexto */
+            position: relative; 
+            z-index: 1; 
+        }
+        .cell:last-child { border-right: none; }
+
         input[type="time"], input[type="date"] {
             appearance: none;
             -webkit-appearance: none;
             -moz-appearance: none;
-            min-height: 40px;
-            max-height: 44px;
-            background: #fff;
-            border: 1px solid #ddd !important;
-            padding: 8px 12px !important;
-            border-radius: 4px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1 !important; /* Borda sutil moderna */
+            padding: 10px 8px !important;
+            border-radius: 6px;
             width: 100%;
+            max-width: 100%;
             display: block;
-            line-height: normal;
             font-size: 14px;
-            box-shadow: none;
+            font-family: inherit;
+            color: #000000;
+            box-sizing: border-box;
+            min-height: 42px;
+            line-height: normal;
         }
 
         .app-container { background: white; width: 100%; max-width: 800px; margin: 0 auto; min-height: 100vh; border: 1px solid #000; display: flex; flex-direction: column; }
@@ -39,10 +60,6 @@
         .tech-info { text-align: left !important; font-size: 7px !important; line-height: 1.2; }
 
         .section-header { background: var(--gray); border: 1px solid #000; padding: 10px; font-weight: bold; font-size: 12px; text-transform: uppercase; }
-        .row { display: flex; border-bottom: 1px solid #000; width: 100%; flex-wrap: wrap; }
-        
-        .cell { border-right: 1px solid #000; padding: 12px; display: flex; flex-direction: column; flex: 1; min-width: 150px; position: relative; z-index: 1; }
-        .cell:last-child { border-right: none; }
         
         label { font-size: 10px; font-weight: bold; margin-bottom: 6px; color: var(--blue); text-transform: uppercase; }
         input, textarea, select { border: none; outline: none; font-size: 14px; background: transparent; width: 100%; color: #000; }
@@ -104,8 +121,24 @@
         .btn-submit { background: var(--blue); color: white; border: none; padding: 20px; width: 100%; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: auto; }
         #statusMsg { font-size: 12px; text-align: center; padding: 15px; display: none; font-weight: bold; }
 
+        /* Comportamento responsivo inteligente para celulares */
         @media (max-width: 480px) { 
-            .cell { min-width: 100%; border-right: none; border-bottom: 1px solid #000; } 
+            /* Trava apenas a linha de data/hora lado a lado */
+            .row.context-row {
+                flex-wrap: nowrap !important;
+            }
+            /* Permite as outras linhas normais quebrarem verticalmente se necessário */
+            .row:not(.context-row) {
+                flex-wrap: wrap;
+            }
+            .row:not(.context-row) .cell {
+                min-width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #000;
+            }
+            .row:not(.context-row) .cell:last-child {
+                border-bottom: none;
+            }
             .preview-container { gap: 6px; padding: 10px; }
             .preview-thumb { height: 100px; }
             .check-item { min-width: calc(50% - 5px); }
@@ -127,7 +160,7 @@
         </table>
         
         <div class="section-header">1. CONTEXTO</div>
-        <div class="row">
+        <div class="row context-row">
             <div class="cell"><label>FECHA:</label><input type="date" id="fecha" required></div>
             <div class="cell"><label>HORA:</label><input type="time" id="hora" required></div>
         </div>
