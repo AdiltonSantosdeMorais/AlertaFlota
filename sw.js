@@ -1,5 +1,5 @@
-// Versão do cache atualizada para forçar a limpeza da memória nos celulares
-const CACHE_NAME = 'alertaflota-v10';
+// Versão do cache atualizada para v11 para forçar a limpeza imediata nos aparelhos
+const CACHE_NAME = 'alertaflota-v11';
 const urlsToCache = [
   '/',
   '/templates/index.html',
@@ -8,19 +8,18 @@ const urlsToCache = [
   '/static/manifest.json'
 ];
 
-// Instalação do Service Worker e armazenamento do cache inicial
+// Instalação do Service Worker e armazenamento do cache inicial rápido
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      console.log('Cache PWA renovado com sucesso!');
+      console.log('Cache PWA renovado e otimizado!');
       return cache.addAll(urlsToCache);
     })
   );
-  // Força o Service Worker novo a se tornar ativo imediatamente sem esperar as abas fecharem
   self.skipWaiting(); 
 });
 
-// Ativação e limpeza rígida de caches antigos de versões anteriores
+// Limpeza rígida e imediata de caches antigos de versões anteriores
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
@@ -32,15 +31,27 @@ self.addEventListener('activate', event => {
           }
         })
       );
-    }).then(() => self.clients.claim()) // Assume o controle das páginas imediatamente
+    }).then(() => self.clients.claim())
   );
 });
 
-// Estratégia de Fetch: Tenta buscar no Cache primeiro (para funcionar offline), se não encontrar, vai à Rede
+// ESTRATÉGIA OTIMIZADA (UltraVeloz):
+// Se for o Manifesto ou o Ícone, busca na REDE primeiro para disparar a instalação na hora.
+// Se for o HTML ou as logos normais, busca no CACHE primeiro (garante o funcionamento offline).
 self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
-    })
-  );
+  const url = new URL(event.request.url);
+  
+  if (url.pathname.includes('manifest.json') || url.pathname.includes('icon.png')) {
+    // Força ir buscar direto no servidor para o celular validar o App na hora
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match(event.request))
+    );
+  } else {
+    // Para o resto do formulário, usa o cache para abrir instantâneo mesmo sem internet
+    event.respondWith(
+      caches.match(event.request).then(response => {
+        return response || fetch(event.request);
+      })
+    );
+  }
 });
