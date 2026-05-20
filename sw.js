@@ -1,32 +1,31 @@
-// Versão do cache atualizada para v11 para forçar a limpeza imediata nos aparelhos
-const CACHE_NAME = 'alertaflota-v11';
+// Atualizado para v12 para forçar os celulares a limparem a configuração anterior
+const CACHE_NAME = 'alertaflota-v12';
 const urlsToCache = [
-  '/',
-  '/templates/index.html',
+  '/',                     // Esta é a rota principal que o Flask serve
   '/static/logo-elecnor.png',
   '/static/icon.png',
   '/static/manifest.json'
 ];
 
-// Instalação do Service Worker e armazenamento do cache inicial rápido
+// Instalação do Service Worker e armazenamento das rotas essenciais
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      console.log('Cache PWA renovado e otimizado!');
+      console.log('Armazenando recursos para funcionamento offline...');
       return cache.addAll(urlsToCache);
     })
   );
   self.skipWaiting(); 
 });
 
-// Limpeza rígida e imediata de caches antigos de versões anteriores
+// Limpeza de caches antigos ao atualizar o aplicativo
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cache => {
           if (cache !== CACHE_NAME) {
-            console.log('Deletando memória de cache antiga:', cache);
+            console.log('Removendo cache antigo:', cache);
             return caches.delete(cache);
           }
         })
@@ -35,23 +34,40 @@ self.addEventListener('activate', event => {
   );
 });
 
-// ESTRATÉGIA OTIMIZADA (UltraVeloz):
-// Se for o Manifesto ou o Ícone, busca na REDE primeiro para disparar a instalação na hora.
-// Se for o HTML ou as logos normais, busca no CACHE primeiro (garante o funcionamento offline).
+// ESTRATÉGIA CACHE-FIRST (Com fallback para rede):
+// Tenta buscar absolutamente TUDO no cache primeiro. Se o celular estiver sem internet,
+// ele entrega o formulário e as imagens salvas na memória na hora, sem dar tela de erro.
 self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
-  
-  if (url.pathname.includes('manifest.json') || url.pathname.includes('icon.png')) {
-    // Força ir buscar direto no servidor para o celular validar o App na hora
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match(event.request))
-    );
-  } else {
-    // Para o resto do formulário, usa o cache para abrir instantâneo mesmo sem internet
-    event.respondWith(
-      caches.match(event.request).then(response => {
-        return response || fetch(event.request);
-      })
-    );
+  // Ignora requisições de envio do formulário (POST) e scripts externos (CDN do jsPDF)
+  if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) {
+    return;
   }
+
+  event.respondWith(
+    caches.match(event.request).then(cachedResponse => {
+      if (cachedResponse) {
+        // Se encontrou no cache (HTML, Logo, Ícone), entrega imediatamente (Modo Offline Garantido)
+        return cachedResponse;
+      }
+
+      // Se não estiver no cache, busca na rede e salva uma cópia dinamicamente
+      return fetch(event.request).then(networkResponse => {
+        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+          return networkResponse;
+        }
+
+        const responseToCache = networkResponse.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, responseToCache);
+        });
+
+        return networkResponse;
+      }).catch(() => {
+        // Se a rede falhar e não houver cache, tenta entregar a raiz do app
+        if (event.request.mode === 'navigate') {
+          return caches.match('/');
+        }
+      });
+    })
+  );
 });
